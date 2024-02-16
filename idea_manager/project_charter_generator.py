@@ -15,21 +15,9 @@ class ProjectCharterGenerator:
         project_charter = self.__generate_project_charter(self.project_idea)
 
         # Save project charter
-        self.__save_files(self.project_idea, project_charter)
+        self.__save_files(project_charter)
 
         return project_charter
-
-    def __save_files(self, project_idea, project_charter):
-        file_name = f"{self.file_prefix}_project_charter"
-
-        # Save project charter as .md
-        with open(f"output/{file_name}.md", "w") as file:
-            file.write(project_charter)
-
-        # Convert to docx
-        markdown2docx = Markdown2docx(f"output/{file_name}")
-        markdown2docx.eat_soup()
-        markdown2docx.save()
 
     def __generate_project_charter(self, project_idea):
         prompt = textwrap.dedent(f"""\
@@ -46,11 +34,23 @@ class ProjectCharterGenerator:
             -High-Level Risks and Assumptions
             Keep it short. Use Markdown to format the chapters""")
 
-        print("Prompt: ", prompt)
+        print("Prompt:", prompt)
 
         client = GeminiProClient()
         project_charter = client.generate_output(prompt)
 
-        print("Project Charter: ", project_charter)
+        print("Project Charter:", project_charter)
 
         return project_charter
+
+    def __save_files(self, project_charter):
+        file_name = f"{self.file_prefix}_project_charter"
+
+        # Save project charter as .md
+        with open(f"output/{file_name}.md", "w") as file:
+            file.write(project_charter)
+
+        # Convert to docx
+        markdown2docx = Markdown2docx(f"output/{file_name}")
+        markdown2docx.eat_soup()
+        markdown2docx.save()
