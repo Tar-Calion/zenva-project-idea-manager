@@ -1,5 +1,5 @@
 from idea_manager.gemini_pro_client import GeminiProClient
-import textwrap
+
 import openpyxl
 from pptx import Presentation
 
@@ -19,17 +19,16 @@ class ProjectPlanGenerator:
         self.__save_files(project_plan)
 
     def __generate_project_plan(self, project_charter):
-        prompt = textwrap.dedent(f"""\
-Generate a project plan as a table given the following project charter:
-BEGIN
-{project_charter}
-END
-Generate a table with following columns. Fill the table with tasks based on the project charter above.
--Task name
--Duration
--Dependencies
--Status
--Resources""")
+        prompt = (f"Generate a project plan as a table given the following project charter:\n"
+                  f"BEGIN\n"
+                  f"{project_charter}\n"
+                  f"END\n"
+                  f"Generate a table with following columns. Fill the table with tasks based on the project charter above.\n"
+                  f"-Task name\n"
+                  f"-Duration\n"
+                  f"-Dependencies\n"
+                  f"-Status\n"
+                  f"-Resources")
 
         print("Prompt:", prompt)
 
@@ -55,7 +54,13 @@ Generate a table with following columns. Fill the table with tasks based on the 
             if not line.strip():
                 continue
             cells = line.split("|")
-            cells = [cell.replace("*", "").strip() for cell in cells if cell.strip()]
+            cells = [cell.replace("*", "").strip() for cell in cells]
+
+            # remove cells on start and end if they are empty
+            if cells[0] == "":
+                cells = cells[1:]
+            if cells[-1] == "":
+                cells = cells[:-1]
             table.append(cells)
         return table
 
@@ -78,11 +83,10 @@ Generate a table with following columns. Fill the table with tasks based on the 
         for row in parsed_project_plan[1:]:
             slide = presentation.slides.add_slide(layout)
             slide.placeholders[0].text = row[0]
-            text = textwrap.dedent(f"""\
-                Duration: {row[1]}
-                Dependencies: {row[2]}
-                Status: {row[3]}
-                Resources: {row[4]}""")
+            text = (f"Duration: {row[1]}\n"
+                    f"Dependencies: {row[2]}\n"
+                    f"Status: {row[3]}\n"
+                    f"Resources: {row[4]}")
 
             slide.placeholders[1].text = text
 

@@ -1,6 +1,5 @@
 from idea_manager.gemini_pro_client import GeminiProClient
 from Markdown2docx import Markdown2docx
-import textwrap
 
 
 class RiskManagementPlanGenerator:
@@ -18,12 +17,12 @@ class RiskManagementPlanGenerator:
         self.__save_files(risk_management_plan)
 
     def __generate_risk_management_plan(self, project_charter):
-        prompt = textwrap.dedent(f"""\
-Act as a senior project manager with experience in software projects. Write a risk assessment plan that identifies assesses and outlines strategies to manage risks in the project based on the following charter:
-BEGINNING OF PROJECT CHARTER
-{project_charter}
----
-END OF PROJECT CHARTER""")
+        prompt = (f"Act as a senior project manager with experience in software projects."
+                  " Write a risk assessment plan that identifies assesses and outlines strategies"
+                  " to manage risks in the project based on the following charter:\n"
+                  f"BEGIN\n"
+                  f"{project_charter}\n"
+                  f"END")
 
         print("Prompt:", prompt)
 
