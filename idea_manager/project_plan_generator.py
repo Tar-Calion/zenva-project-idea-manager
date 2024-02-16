@@ -1,6 +1,7 @@
 from idea_manager.gemini_pro_client import GeminiProClient
 import textwrap
 import openpyxl
+from pptx import Presentation
 
 
 class ProjectPlanGenerator:
@@ -19,16 +20,16 @@ class ProjectPlanGenerator:
 
     def __generate_project_plan(self, project_charter):
         prompt = textwrap.dedent(f"""\
-            Generate a project plan as a table given the following project charter:
-            BEGIN
-            {project_charter}
-            END
-            Generate a table with following columns. Fill the table with tasks based on the project charter above.
-            -Task name
-            -Duration
-            -Dependencies
-            -Status
-            -Resources""")
+Generate a project plan as a table given the following project charter:
+BEGIN
+{project_charter}
+END
+Generate a table with following columns. Fill the table with tasks based on the project charter above.
+-Task name
+-Duration
+-Dependencies
+-Status
+-Resources""")
 
         print("Prompt:", prompt)
 
@@ -45,13 +46,16 @@ class ProjectPlanGenerator:
         parsed_project_plan = self.__parse_markdown_table(project_plan)
 
         self.__save_excel(parsed_project_plan, file_name)
+        self.__save_powerpoint(parsed_project_plan, file_name)
 
-    def __parse_markdown_table(self, markdown_table):
+    def __parse_markdown_table(self, markdown_table: str):
         lines = markdown_table.split("\n")
         table = []
         for line in lines[0:1] + lines[2:]:
+            if not line.strip():
+                continue
             cells = line.split("|")
-            cells = [cell.strip() for cell in cells if cell.strip()]
+            cells = [cell.replace("*", "").strip() for cell in cells if cell.strip()]
             table.append(cells)
         return table
 
@@ -65,3 +69,21 @@ class ProjectPlanGenerator:
             worksheet.append(row)
 
         workbook.save(f"output/{file_name}.xlsx")
+
+    def __save_powerpoint(self, parsed_project_plan: list, file_name):
+
+        presentation = Presentation()
+        layout = presentation.slide_layouts[1]
+
+        for row in parsed_project_plan[1:]:
+            slide = presentation.slides.add_slide(layout)
+            slide.placeholders[0].text = row[0]
+            text = textwrap.dedent(f"""\
+                Duration: {row[1]}
+                Dependencies: {row[2]}
+                Status: {row[3]}
+                Resources: {row[4]}""")
+
+            slide.placeholders[1].text = text
+
+        presentation.save(f"output/{file_name}.pptx")

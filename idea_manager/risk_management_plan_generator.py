@@ -19,11 +19,11 @@ class RiskManagementPlanGenerator:
 
     def __generate_risk_management_plan(self, project_charter):
         prompt = textwrap.dedent(f"""\
-            Act as a senior project manager with experience in software projects. Write a risk assessment plan that identifies assesses and outlines strategies to manage risks in the project based on the following charter:
-            BEGINNING OF PROJECT CHARTER
-            {project_charter}
-            ---
-            END OF PROJECT CHARTER""")
+Act as a senior project manager with experience in software projects. Write a risk assessment plan that identifies assesses and outlines strategies to manage risks in the project based on the following charter:
+BEGINNING OF PROJECT CHARTER
+{project_charter}
+---
+END OF PROJECT CHARTER""")
 
         print("Prompt:", prompt)
 
