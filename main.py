@@ -1,5 +1,5 @@
 from idea_manager.gemini_pro_client import GeminiProClient
+from idea_manager.project_charter_generator import ProjectCharterGenerator
 
-client = GeminiProClient()
-
-print(client.generate_output("say hello"))
+project_charter_generator = ProjectCharterGenerator()
+project_charter_generator.generate()
